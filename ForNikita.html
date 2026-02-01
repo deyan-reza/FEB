@@ -10,10 +10,6 @@ body {
   min-height: 100vh;
   margin: 0;
   background-color: #F9BBFC;
-  background-image: url('bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 h1 {
@@ -312,27 +308,20 @@ function noClicked() {
     document.getElementById('question').textContent = '"I\'m liking this"';
     }
     else if (noClickCount === 7) {
-    document.getElementById('heading').textContent = '..';
-    document.getElementById('subheading').textContent = 'Are you serious';
-    document.getElementById('image').src = 'w.gif';
-    document.getElementById('image').style.width = '500px';
-    document.getElementById('question').textContent = '"Is the yes getting bigger?"';
-    }
-    else if (noClickCount === 8) {
     document.getElementById('heading').textContent = '...';
     document.getElementById('subheading').textContent = 'Just stop!';
     document.getElementById('image').src = 's.gif';
     document.getElementById('image').style.width = '500px';
     document.getElementById('question').textContent = '"Ur still saying no?"';
     }
-    else if ((noClickCount >= 9) && (noClickCount <= 12)) {
+    else if ((noClickCount >= 8) && (noClickCount <= 9)) {
     document.getElementById('heading').textContent = '....';
     document.getElementById('subheading').textContent = 'I\'ve had enough!';
     document.getElementById('image').src = 'sad.gif';
     document.getElementById('image').style.width = '500px';
     document.getElementById('question').textContent = '"(╥‸╥)"';
 
-    noFontSize -= 0.2;
+    noFontSize -= 0.3;
     document.getElementById('noButton').style.fontSize = noFontSize + 'rem';
     document.getElementById('noButton').style.padding = (15 - (noClickCount - 8) * 3) + 'px ' + (40 - (noClickCount - 8) * 8) + 'px';
 
@@ -368,6 +357,7 @@ function moveNoButton() {
 </body>
 
 </html>
+
 
 
 
