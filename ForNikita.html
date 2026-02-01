@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 5rem;
+  margin: 20px;
+}
+h2 {
+  text-align: center;
+  font-size: 3rem;
+  margin: 20px;
+}
+p {
+  text-align: center;
+  font-size: 2rem;
+  margin: 20px;
+}
+
+img {
+  width: 500px;
+  height: 10%;
+  margin-top: 50px;
+}
+
+.button-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+button {
+  font-size: 1.5rem;
+  padding: 15px 40px;
+  cursor: pointer;
+}
+
+#noButton.moving {
+  position: fixed;
+  transition: all 0.3s ease;
+}
+</style>
+</head>
+<body>
+
+<h1 id="heading">Hello Nikita</h1>
+<h2 id="subheading">I have trapped Deyan in your computer, <br> you must try to free him by fulfilling his wish</h2>
+<img id="image" src="cages.jpg" alt="Me in a Cage">
+<p id="question">"Will you be my Valentine :3"</p>
+<div class="button-container">
+  <button id="yesButton" type="button" onclick="yesClicked()">YES!</button>
+  <button id="noButton" type="button" onclick="noClicked()">NO!</button>
+</div>
+
+<script>
+let noClickCount = 0;
+let yesFontSize = 1.5;
+let noFontSize = 1.5;
+
+function yesClicked() {
+  document.getElementById('winButton').style.display = 'none';
+  document.getElementById('heading').textContent = "Congratulations";
+  document.getElementById('subheading').textContent = 'Deyan is free!';
+  document.getElementById('question').textContent = "THANK YOU!";
+  document.getElementById('image').src = 'happy.gif';
+  document.getElementById('image').style.width = '500px';
+  document.querySelector('.button-container').style.display = 'none';
+}
+
+function finalYesClicked() {
+  document.getElementById('heading').textContent = "SINCE YOU HAVE ANGERED ME";
+  document.getElementById('subheading').textContent = 'YOU MUST FIGHT ME FOR HIM!';
+  document.getElementById('question').textContent = '"SAVE ME NIKKIIII"';
+  document.getElementById('image').src = 'gone.gif';
+  document.getElementById('image').style.width = '500px';
+  document.getElementById('yesButton').textContent = 'ENTER';
+  document.getElementById('yesButton').onclick = enterBoss;
+}
+
+function enterBoss() {
+  document.getElementById('heading').textContent = "TIC TAC TOE BATTLE";
+  document.getElementById('subheading').textContent = 'Defeat me to free Deyan!';
+  document.getElementById('question').textContent = '"You can do it Nikki!"';
+  document.getElementById('image').src = 'fight.gif';
+  document.getElementById('image').style.width = '250px';
+  
+  // Hide the enter button
+  document.querySelector('.button-container').style.display = 'none';
+  
+  // Create tic-tac-toe board
+  const gameContainer = document.createElement('div');
+  gameContainer.id = 'gameContainer';
+  gameContainer.innerHTML = `
+    <style>
+      .tic-tac-toe {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-gap: 5px;
+        margin: 20px auto;
+      }
+      .cell {
+        width: 100px;
+        height: 100px;
+        background-color: #f0f0f0;
+        border: 2px solid #333;
+        font-size: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .cell:hover {
+        background-color: #e0e0e0;
+      }
+      #winButton {
+        font-size: 2rem;
+        padding: 20px 50px;
+        margin-top: 20px;
+        display: none;
+      }
+    </style>
+    <div class="tic-tac-toe" id="board"></div>
+    <button id="winButton" onclick="yesClicked()">FREE DEYAN</button>
+  `;
+  
+  document.body.appendChild(gameContainer);
+  
+  // Create board cells
+  const board = document.getElementById('board');
+  let cells = [];
+  let gameActive = true;
+  
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.dataset.index = i;
+    cell.addEventListener('click', () => makeMove(i));
+    board.appendChild(cell);
+    cells.push(cell);
+  }
+  
+  function makeMove(index) {
+    if (!gameActive || cells[index].textContent !== '') return;
+    
+    // Player move (X)
+    cells[index].textContent = 'X';
+    cells[index].style.color = '#ff69b4';
+    
+    if (checkWin('X')) {
+      document.getElementById('heading').textContent = "NOOOOOOOO";
+      document.getElementById('subheading').textContent = 'YOU HAVE DEFEATED ME';
+      document.getElementById('image').src = 'cat.gif';
+      document.getElementById('image').style.width = '500px';
+      document.getElementById('question').textContent = '"MY HERO!!"';
+      document.getElementById('winButton').style.display = 'inline-block';
+      document.getElementById('board').style.display = 'none';
+      gameActive = false;
+      return;
+    }
+    
+    // Check for tie after player move
+    if (checkTie()) {
+      showTieScreen();
+      return;
+    }
+    
+    // AI move (O) - intentionally bad AI
+    setTimeout(() => {
+      if (!gameActive) return;
+      
+      // AI just picks a random empty cell (very easy to beat)
+      let emptyCells = cells.map((cell, i) => cell.textContent === '' ? i : null).filter(i => i !== null);
+      if (emptyCells.length > 0) {
+        let randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        cells[randomIndex].textContent = 'O';
+        cells[randomIndex].style.color = '#333';
+        
+        if (checkWin('O')) {
+          document.getElementById('subheading').textContent = 'You lost! Try again!';
+          document.getElementById('image').src = 'try.gif';
+          document.getElementById('image').style.width = '500px';
+          document.getElementById('question').textContent = '"Noooo you can do it!"';
+          document.getElementById('board').style.display = 'none';
+          
+          // Create try again button
+          const tryAgainBtn = document.createElement('button');
+          tryAgainBtn.textContent = 'TRY AGAIN';
+          tryAgainBtn.style.fontSize = '2rem';
+          tryAgainBtn.style.padding = '20px 50px';
+          tryAgainBtn.style.marginTop = '20px';
+          tryAgainBtn.onclick = () => {
+            document.getElementById('gameContainer').remove();
+            enterBoss();
+          };
+          document.getElementById('gameContainer').appendChild(tryAgainBtn);
+          
+          gameActive = false;
+        } else if (checkTie()) {
+          // Check for tie after AI move
+          showTieScreen();
+        }
+      }
+    }, 300);
+  }
+  
+  function checkWin(player) {
+    const winPatterns = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+      [0, 4, 8], [2, 4, 6] // diagonals
+    ];
+    
+    return winPatterns.some(pattern => {
+      return pattern.every(index => cells[index].textContent === player);
+    });
+  }
+  
+  function checkTie() {
+    // Check if all cells are filled
+    return cells.every(cell => cell.textContent !== '');
+  }
+  
+  function showTieScreen() {
+    gameActive = false;
+    document.getElementById('heading').textContent = "IT'S A TIE!";
+    document.getElementById('subheading').textContent = 'Try again to free Deyan!';
+    document.getElementById('image').src = 'try.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"So close! You can do it!"';
+    document.getElementById('board').style.display = 'none';
+    
+    // Create try again button
+    const tryAgainBtn = document.createElement('button');
+    tryAgainBtn.textContent = 'TRY AGAIN';
+    tryAgainBtn.style.fontSize = '2rem';
+    tryAgainBtn.style.padding = '20px 50px';
+    tryAgainBtn.style.marginTop = '20px';
+    tryAgainBtn.onclick = () => {
+      document.getElementById('gameContainer').remove();
+      enterBoss();
+    };
+    document.getElementById('gameContainer').appendChild(tryAgainBtn);
+  }
+}
+
+function noClicked() {
+  noClickCount++;
+  
+  if (noClickCount === 1) {
+    document.getElementById('heading').textContent = 'Are you sure?';
+    document.getElementById('subheading').textContent = 'Deyan is still trapped...';
+    document.getElementById('image').src = 'scare.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"NIKKI PLEASE LEMME OUT"';
+  } else if (noClickCount === 2) {
+    document.getElementById('heading').textContent = 'Really?';
+    document.getElementById('subheading').textContent = 'He\'s been in there for so long...';
+    document.getElementById('image').src = 'flow.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"How about some flowers :3"';
+  } else if (noClickCount === 3) {
+    document.getElementById('heading').textContent = 'Come on!';
+    document.getElementById('subheading').textContent = 'Just one little yes...';
+    document.getElementById('image').src = 'bear.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"Okay here\'s a nice teddy, how about now :D"';
+  } else if (noClickCount === 4) {
+    document.getElementById('heading').textContent = 'PLEASE!!!';
+    document.getElementById('subheading').textContent = 'Now there is no way you can say no!';
+    document.getElementById('image').src = 'c.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"What dat mean?"';
+  } else {
+    document.getElementById('heading').textContent = 'MUAHAHA';
+    document.getElementById('subheading').textContent = 'Now there is no way you can say no!';
+    document.getElementById('image').src = 'b.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"Oh damn it moves :o"';
+    
+    // Add moving class to enable absolute positioning
+    const noButton = document.getElementById('noButton');
+    noButton.classList.add('moving');
+    
+    // Move NO button to random position
+    moveNoButton();
+    
+    // Make YES button bigger
+    yesFontSize += 0.3;
+    document.getElementById('yesButton').style.fontSize = yesFontSize + 'rem';
+
+    if (noClickCount === 6) {
+    document.getElementById('heading').textContent = 'MUAHAHAHAHAHAHAHAHAHHAH';
+    document.getElementById('subheading').textContent = 'I\'ve made it impossible!';
+    document.getElementById('image').src = 'a.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"I\'m liking this"';
+    }
+    else if (noClickCount === 7) {
+    document.getElementById('heading').textContent = '..';
+    document.getElementById('subheading').textContent = 'Are you serious';
+    document.getElementById('image').src = 'w.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"Is the yes getting bigger?"';
+    }
+    else if (noClickCount === 8) {
+    document.getElementById('heading').textContent = '...';
+    document.getElementById('subheading').textContent = 'Just stop!';
+    document.getElementById('image').src = 's.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"Ur still saying no?"';
+    }
+    else if ((noClickCount >= 9) && (noClickCount <= 12)) {
+    document.getElementById('heading').textContent = '....';
+    document.getElementById('subheading').textContent = 'I\'ve had enough!';
+    document.getElementById('image').src = 'sad.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"(╥‸╥)"';
+
+    noFontSize -= 0.2;
+    document.getElementById('noButton').style.fontSize = noFontSize + 'rem';
+    document.getElementById('noButton').style.padding = (15 - (noClickCount - 8) * 3) + 'px ' + (40 - (noClickCount - 8) * 8) + 'px';
+
+
+    }
+    else if (noClickCount > 12) {
+    document.getElementById('heading').textContent = '....';
+    document.getElementById('subheading').textContent = 'I\'ve had enough!';
+    document.getElementById('image').src = 'heh.gif';
+    document.getElementById('image').style.width = '500px';
+    document.getElementById('question').textContent = '"Now you gotta accept heh"';
+    document.getElementById('noButton').style.display = 'none';
+    document.getElementById('yesButton').onclick = finalYesClicked;
+    }
+  }
+}
+
+function moveNoButton() {
+  const noButton = document.getElementById('noButton');
+  
+  // Get random position within viewport
+  const maxX = window.innerWidth - noButton.offsetWidth - 100;
+  const maxY = window.innerHeight - noButton.offsetHeight - 100;
+  
+  const randomX = Math.random() * maxX;
+  const randomY = Math.random() * maxY;
+  
+  noButton.style.left = randomX + 'px';
+  noButton.style.top = randomY + 'px';
+}
+</script>
+
+</body>
+</html>
